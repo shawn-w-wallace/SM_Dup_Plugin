@@ -76,11 +76,11 @@ TSharedRef<SDockTab> MyWindow::OnSpawnPluginTab(const FSpawnTabArgs & SpawnTabAr
 					SNew(SHorizontalBox)
 					+ SHorizontalBox::Slot()
 					[
-						SNew(STextBlock).Text(AxisMessage)
+						SNew(STextBlock).Text(CopiesMessage)
 					]
 					+ SHorizontalBox::Slot()
 					[
-						SNew(STextBlock).Text(CopiesMessage)
+						SNew(STextBlock).Text(AxisMessage)
 					]
 					+ SHorizontalBox::Slot()
 					[
@@ -91,19 +91,13 @@ TSharedRef<SDockTab> MyWindow::OnSpawnPluginTab(const FSpawnTabArgs & SpawnTabAr
 				+ SVerticalBox::Slot().VAlign(VAlign_Top)
 				[
 					SNew(SHorizontalBox)
-					//CheckBox
+					//Number field
+					+ SHorizontalBox::Slot().Padding(10, 0)
+
 					+ SHorizontalBox::Slot()
 					[
 						//On click changes state of check box to the previous state via Toggle(function)
 						SNew(SCheckBox).OnCheckStateChanged_Raw(this, &MyWindow::ToggleXCheckBox).Content()[SNew(STextBlock).Text(CheckBoxXLabel)]
-					]
-					//Number field
-					+ SHorizontalBox::Slot().Padding(10, 0)
-					[
-						//float numeric text field, calls functions to get user input and save it to field
-						SNew(SNumericEntryBox<float>)
-						.Value_Raw(this, &MyWindow::GetXValueCopies)
-						.OnValueChanged_Raw(this, &MyWindow::SetXValueCopies)
 					]
 					//Number field
 					+ SHorizontalBox::Slot().Padding(10, 0)
@@ -118,19 +112,19 @@ TSharedRef<SDockTab> MyWindow::OnSpawnPluginTab(const FSpawnTabArgs & SpawnTabAr
 				+ SVerticalBox::Slot().VAlign(VAlign_Top)
 				[
 					SNew(SHorizontalBox)
-					//CheckBox
-					+ SHorizontalBox::Slot()
-					[
-						//On click changes state of check box to the previous state via Toggle(function)
-						SNew(SCheckBox).OnCheckStateChanged_Raw(this, &MyWindow::ToggleYCheckBox).Content()[SNew(STextBlock).Text(CheckBoxYLabel)]
-					]
 					//Number field
 					+ SHorizontalBox::Slot().Padding(10, 0)
 					[
 						//float numeric text field, calls functions to get user input and save it to field
 						SNew(SNumericEntryBox<float>)
-						.Value_Raw(this, &MyWindow::GetYValueCopies)
-						.OnValueChanged_Raw(this, &MyWindow::SetYValueCopies)
+						.Value_Raw(this, &MyWindow::GetValueCopies)
+						.OnValueChanged_Raw(this, &MyWindow::SetValueCopies)
+					]
+					//CheckBox
+					+ SHorizontalBox::Slot()
+					[
+						//On click changes state of check box to the previous state via Toggle(function)
+						SNew(SCheckBox).OnCheckStateChanged_Raw(this, &MyWindow::ToggleYCheckBox).Content()[SNew(STextBlock).Text(CheckBoxYLabel)]
 					]
 					//Number field
 					+ SHorizontalBox::Slot().Padding(10, 0)
@@ -145,19 +139,14 @@ TSharedRef<SDockTab> MyWindow::OnSpawnPluginTab(const FSpawnTabArgs & SpawnTabAr
 				+ SVerticalBox::Slot().VAlign(VAlign_Top)
 				[
 					SNew(SHorizontalBox)
+					//Number field
+					+ SHorizontalBox::Slot().Padding(10,0)
+
 					//CheckBox
 					+ SHorizontalBox::Slot()
 					[
 						//On click changes state of check box to the previous state via Toggle(function)
 						SNew(SCheckBox).OnCheckStateChanged_Raw(this, &MyWindow::ToggleZCheckBox).Content()[SNew(STextBlock).Text(CheckBoxZLabel)]
-					]
-					//Number field
-					+ SHorizontalBox::Slot().Padding(10,0)
-					[
-						//float numeric text field, calls functions to get user input and save it to field
-						SNew(SNumericEntryBox<float>)
-						.Value_Raw(this, &MyWindow::GetZValueCopies)
-						.OnValueChanged_Raw(this, &MyWindow::SetZValueCopies)
 					]
 					//Number field
 					+ SHorizontalBox::Slot().Padding(10, 0)
@@ -194,19 +183,19 @@ FReply MyWindow::ToggleButton()
 {
 	if (XChecked == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for copies along the X axis"), MyXValueCopies);
+		//UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for copies along the X axis"), MyXValueCopies);
 		UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for spacing along the X axis"), MyXValueSpacing);
 	}
 
 	if (YChecked == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for copies along the Y axis"), MyYValueCopies);
+		//UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for copies along the Y axis"), MyYValueCopies);
 		UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for spacing along the Y axis"), MyYValueSpacing);
 	}
 
 	if (ZChecked == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for copies along the Z axis"), MyZValueCopies);
+		//UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for copies along the Z axis"), MyZValueCopies);
 		UE_LOG(LogTemp, Warning, TEXT("Value entered: %f for spacing along the Z axis"), MyZValueSpacing);
 	}
 
@@ -214,18 +203,15 @@ FReply MyWindow::ToggleButton()
 	if (MyActor == NULL)
 		return FReply::Handled();
 
-	//assigns copies and spacing according to user input in the float data fields
-	CopiesX = MyXValueCopies;
-	CopiesY = MyYValueCopies;
-	CopiesZ = MyZValueCopies;
+	Copies = MyValueCopies;
 	SpacingX = MyXValueSpacing;
 	SpacingY = MyYValueSpacing;
 	SpacingZ = MyZValueSpacing;
 
 	//loop for copying static mesh, X field Copies
-	for (int32 i = 0; i < CopiesX; i++)
+	for (int32 i = 0; i < Copies; i++)
 	{
-		if (XChecked == true)
+		if (XChecked == true || YChecked == true || ZChecked == true)
 		{
 			//retrieves mesh, increments copycount each iteration of loop, assigns name to new mesh
 			MyActor->GetActorBounds(false, GroundOrigin, GroundExtends);
@@ -260,81 +246,7 @@ FReply MyWindow::ToggleButton()
 		}
 	}
 
-	//loop for copying static mesh, Y field Copies
-	for (int32 i = 0; i < CopiesY; i++)
-	{
-		if (YChecked == true)
-		{
-			//retrieves mesh, increments copycount each iteration of loop, assigns name to new mesh
-			MyActor->GetActorBounds(false, GroundOrigin, GroundExtends);
-			CopyCount++;
-			StringCopyCount = FString::FromInt(CopyCount);
-			MyActorName = MyActor->GetFName().ToString();
-			NewName = MyActorName + "_" + StringCopyCount;
 
-			//gets mesh by name, copies mesh, and assignes pointer for transform
-			SpawnParams.Name = FName(*NewName);
-			SpawnParams.Template = MyActor;
-			MyActorCopy = MyWorld()->SpawnActorAbsolute<AStaticMeshActor>(MyActor->GetClass(), MyActor->GetTransform(), SpawnParams);
-
-			//transforms the position of the static mesh relative to the position of the previous mesh
-			if (XChecked == true)
-				MyActorCopyX = ((i + 1) * GroundExtends.X * 2) + MyActorCopy->GetActorLocation().X + (SpacingX * (i + 1));
-			else
-				MyActorCopyX = GroundOrigin.X;
-
-			if (YChecked == true)
-				MyActorCopyY = ((i + 1) * GroundExtends.Y * 2) + MyActorCopy->GetActorLocation().Y + (SpacingY * (i + 1));
-			else
-				MyActorCopyY = GroundOrigin.Y;
-
-			if (ZChecked == true)
-				MyActorCopyZ = ((i + 1) * GroundExtends.Z * 2) + MyActorCopy->GetActorLocation().Z + (SpacingZ * (i + 1));
-			else
-				MyActorCopyZ = MyActor->GetActorLocation().Z;
-
-			//moves mesh to new location
-			MyActorCopy->SetActorLocation(FVector(MyActorCopyX, MyActorCopyY, MyActorCopyZ));
-		}
-	}
-
-	//loop for copying static mesh, Z field Copies
-	for (int32 i = 0; i < CopiesZ; i++)
-	{
-		if (ZChecked == true)
-		{
-			//retrieves mesh, increments copycount each iteration of loop, assigns name to new mesh
-			MyActor->GetActorBounds(false, GroundOrigin, GroundExtends);
-			CopyCount++;
-			StringCopyCount = FString::FromInt(CopyCount);
-			MyActorName = MyActor->GetFName().ToString();
-			NewName = MyActorName + "_" + StringCopyCount;
-
-			//gets mesh by name, copies mesh, and assignes pointer for transform
-			SpawnParams.Name = FName(*NewName);
-			SpawnParams.Template = MyActor;
-			MyActorCopy = MyWorld()->SpawnActorAbsolute<AStaticMeshActor>(MyActor->GetClass(), MyActor->GetTransform(), SpawnParams);
-
-			//transforms the position of the static mesh relative to the position of the previous mesh
-			if (XChecked == true)
-				MyActorCopyX = ((i + 1) * GroundExtends.X * 2) + MyActorCopy->GetActorLocation().X + (SpacingX * (i + 1));
-			else
-				MyActorCopyX = GroundOrigin.X;
-
-			if (YChecked == true)
-				MyActorCopyY = ((i + 1) * GroundExtends.Y * 2) + MyActorCopy->GetActorLocation().Y + (SpacingY * (i + 1));
-			else
-				MyActorCopyY = GroundOrigin.Y;
-
-			if (ZChecked == true)
-				MyActorCopyZ = ((i + 1) * GroundExtends.Z * 2) + MyActorCopy->GetActorLocation().Z + (SpacingZ * (i + 1));
-			else
-				MyActorCopyZ = MyActor->GetActorLocation().Z;
-
-			//moves mesh to new location
-			MyActorCopy->SetActorLocation(FVector(MyActorCopyX, MyActorCopyY, MyActorCopyZ));
-		}
-	}
 
 	return FReply::Handled();
 }
@@ -385,9 +297,15 @@ void MyWindow::ToggleZCheckBox(ECheckBoxState NewZState)
 }
 
 //Gets user input from this text field
-TOptional<float> MyWindow::GetXValueCopies() const
+TOptional<float> MyWindow::GetValueCopies() const
 {
-	return MyXValueCopies;
+	return MyValueCopies;
+}
+
+//"saves" user input to this field
+void MyWindow::SetValueCopies(float Copies)
+{
+	MyValueCopies = Copies;
 }
 
 //Gets user input from this text field
@@ -401,23 +319,11 @@ TOptional<float> MyWindow::GetXValueSpacing() const
 }
 
 //"saves" user input to this field
-void MyWindow::SetXValueCopies(float XCopies)
-{
-	MyXValueCopies = XCopies;
-}
-
-//"saves" user input to this field
 void MyWindow::SetXValueSpacing(float XSpacing)
 {
 	//sets value of XSpacing as long as a negative number is not entered
 	if (MyXValueSpacing >= 0.0)
 		MyXValueSpacing = XSpacing;
-}
-
-//Gets user input from this text field
-TOptional<float> MyWindow::GetYValueCopies() const
-{
-	return MyYValueCopies;
 }
 
 //Gets user input from this text field
@@ -431,23 +337,11 @@ TOptional<float> MyWindow::GetYValueSpacing() const
 }
 
 //"saves" user input to this field
-void MyWindow::SetYValueCopies(float YCopies)
-{
-	MyYValueCopies = YCopies;
-}
-
-//"saves" user input to this field
 void MyWindow::SetYValueSpacing(float YSpacing)
 {
 	//sets value of XSpacing as long as a negative number is not entered
 	if (MyYValueSpacing >= 0.0)
 		MyYValueSpacing = YSpacing;
-}
-
-//Gets user input from this text field
-TOptional<float> MyWindow::GetZValueCopies() const
-{
-	return MyZValueCopies;
 }
 
 //Gets user input from this text field
@@ -458,12 +352,6 @@ TOptional<float> MyWindow::GetZValueSpacing() const
 		return 0;
 	else
 		return MyZValueSpacing;
-}
-
-//"saves" user input to this field
-void MyWindow::SetZValueCopies(float ZCopies)
-{
-	MyZValueCopies = ZCopies;
 }
 
 //"saves" user input to this field
