@@ -16,18 +16,14 @@ public:
 	void ToggleXCheckBox(ECheckBoxState NewXState);
 	void ToggleYCheckBox(ECheckBoxState NewYState);
 	void ToggleZCheckBox(ECheckBoxState NewZState);
-	TOptional<float> GetXValueCopies() const;
 	TOptional<float> GetXValueSpacing() const;
-	TOptional<float> GetYValueCopies() const;
 	TOptional<float> GetYValueSpacing() const;
-	TOptional<float> GetZValueCopies() const;
 	TOptional<float> GetZValueSpacing() const;
-	void SetXValueCopies(float XCopies);
+	TOptional<float> GetValueCopies() const;
 	void SetXValueSpacing(float XSpacing);
-	void SetYValueCopies(float YCopies);
 	void SetYValueSpacing(float YSpacing);
-	void SetZValueCopies(float ZCopies);
-	void SetZValueSpacing(float ASpacing);
+	void SetZValueSpacing(float ZSpacing);
+	void SetValueCopies(float Copies);
 	UWorld* MyWorld();
 	FText GetActorName() const;
 	bool IsActorSelected(AStaticMeshActor* SelectedActor);
@@ -39,11 +35,9 @@ private:
 	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
 	TSharedPtr<SComboButton> ActorDropdown;
 	float MyXValueSpacing = 0.0;
-	float MyXValueCopies = 1.0;
 	float MyYValueSpacing = 0.0;
-	float MyYValueCopies = 1.0;
 	float MyZValueSpacing = 0.0;
-	float MyZValueCopies = 1.0;
+	float MyValueCopies = 1.0;
 	AStaticMeshActor* MyActor = NULL;
 
 	FActorSpawnParameters SpawnParams;
@@ -54,12 +48,10 @@ private:
 	FVector Origin;
 	FVector GroundOrigin;
 	FVector GroundExtends;
-	int32 CopiesX = 0;
 	float SpacingX = 0.f;
-	int32 CopiesY = 0;
 	float SpacingY = 0.f;
-	int32 CopiesZ = 0;
 	float SpacingZ = 0.f;
+	int32 Copies = 0;
 	int CopyCount = 0;
 	FString StringCopyCount;
 	FString MyActorName;
@@ -67,5 +59,7 @@ private:
 	bool XChecked;
 	bool YChecked;
 	bool ZChecked;
+
+};
 
 };
